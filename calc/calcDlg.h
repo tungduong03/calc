@@ -73,4 +73,7 @@ protected:
 	CButton btn_sqrt;
 public:
 	afx_msg void OnBnClickedBtnSqrt();
+	afx_msg void OnBnClickedButton22();
+	afx_msg void OnBnClickedBtnnegate();
+	afx_msg void OnBnClickedButton21();
 };

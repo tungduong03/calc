@@ -104,6 +104,9 @@ BEGIN_MESSAGE_MAP(CcalcDlg, CDialogEx)
 	ON_BN_CLICKED(ID_BTN_CE, &CcalcDlg::OnBnClickedBtnCe)
 	ON_BN_CLICKED(ID_BTN_C, &CcalcDlg::OnBnClickedBtnC)
 	ON_BN_CLICKED(ID_BTN_SQRT, &CcalcDlg::OnBnClickedBtnSqrt)
+	ON_BN_CLICKED(IDC_BUTTON22, &CcalcDlg::OnBnClickedButton22)
+	ON_BN_CLICKED(IDC_BTNnegate, &CcalcDlg::OnBnClickedBtnnegate)
+	ON_BN_CLICKED(IDC_BUTTON21, &CcalcDlg::OnBnClickedButton21)
 END_MESSAGE_MAP()
 
 
@@ -828,9 +831,10 @@ void CcalcDlg::OnBnClickedBtnSum()
 	
 	if (flag == 2) { //đang ở trạng thái nhập dấu
 		dau = "+";
+		str_val1.Delete(str_val1.GetLength() - 1, 1);
 		flag_val2 = 0;
-		edt_2.SetWindowText(str_val2+dau);
-		edt_resul.SetWindowText(_T(""));
+		edt_2.SetWindowText(str_val1 + dau);
+		edt_resul.SetWindowText(str_val2);
 		UpdateData(FALSE);
 	}
 	else if (flag == 1) {
@@ -887,10 +891,18 @@ void CcalcDlg::OnBnClickedBtnEqua()
 	if (flag == 3) { //nếu đã đủ 3 số
 		answer = calc(value_1, value_2, dau);
 		str = answer;
-		str_val1 += str_val2;
+		
+		if (str_val1.Find('%',1) != -1) {
+			str_val1 += dau;
+			str_val1 += value_2;
+		}
+		else {
+			str_val1 += str_val2;
+		}
+		
 		str_val1 += "=";
 		str_val1 += answer;
-		if (answer != "Cannot divide by zero.") {
+		if (answer != "Cannot divide by zero.") { //nếu có phép chia cho 0 
 			edt_2.SetWindowText(str_val1);
 			edt_resul.SetWindowText(str);
 			UpdateData(FALSE);
@@ -1028,9 +1040,10 @@ void CcalcDlg::OnBnClickedBtnSub()
 
 	if (flag == 2) { //đang ở trạng thái nhập dấu
 		dau = "-";
+		str_val1.Delete(str_val1.GetLength() - 1, 1);
 		flag_val2 = 0;
-		edt_2.SetWindowText(str_val2 + dau);
-		edt_resul.SetWindowText(_T(""));
+		edt_2.SetWindowText(str_val1 + dau);
+		edt_resul.SetWindowText(str_val2);
 		UpdateData(FALSE);
 	}
 	else if (flag == 1) {
@@ -1082,9 +1095,10 @@ void CcalcDlg::OnBnClickedBtnMul()
 
 	if (flag == 2) { //đang ở trạng thái nhập dấu
 		dau = "*";
+		str_val1.Delete(str_val1.GetLength() - 1, 1);
 		flag_val2 = 0;
-		edt_2.SetWindowText(str_val2 + dau);
-		edt_resul.SetWindowText(_T(""));
+		edt_2.SetWindowText(str_val1 + dau);
+		edt_resul.SetWindowText(str_val2);
 		UpdateData(FALSE);
 	}
 	else if (flag == 1) {
@@ -1136,9 +1150,10 @@ void CcalcDlg::OnBnClickedBtnDiv()
 
 	if (flag == 2) { //đang ở trạng thái nhập dấu
 		dau = "/";
+		str_val1.Delete(str_val1.GetLength() - 1, 1);
 		flag_val2 = 0;
-		edt_2.SetWindowText(str_val2 + dau);
-		edt_resul.SetWindowText(_T(""));
+		edt_2.SetWindowText(str_val1 + dau);
+		edt_resul.SetWindowText(str_val2);
 		UpdateData(FALSE);
 	}
 	else if (flag == 1) {
@@ -1277,6 +1292,175 @@ void CcalcDlg::OnBnClickedBtnSqrt()
 		answer = calc(answer, _T("0"), _T("+"));
 		flag_val2 = 0;
 		edt_2.SetWindowText(_T("sqrt(" + value_1 + _T(")")));
+		edt_resul.SetWindowText(answer);
+		value_1 = answer;
+		UpdateData(FALSE);
+	}
+}
+
+
+void CcalcDlg::OnBnClickedButton22() //btn %
+{
+	// TODO: Add your control notification handler code here
+	UpdateData(true);
+	CString str_val2 = _T("");
+	CString str_val1 = _T("");
+
+	edt_resul.GetWindowText(str_val2);
+	edt_2.GetWindowText(str_val1);
+
+	if (flag == 2) { //đang ở trạng thái nhập dấu
+		flag_val2 = 0;
+		answer = calc(value_1, value_1, _T("*"));
+		answer = calc(answer, _T("100"), _T("/"));
+		edt_2.SetWindowText(value_1 + dau + value_1 + _T("%"));
+		edt_resul.SetWindowText(answer);
+		value_2 = answer;
+		UpdateData(FALSE);
+		flag = 3;
+	}
+	else if (flag == 1) {
+		flag = 1; //chuyển trạng thái từ nhập số qua nhập dấu
+		flag_val1 = 0;
+		edt_2.SetWindowText(value_1+_T("%"));
+		edt_resul.SetWindowText(_T("0"));
+		value_1 = _T("0");
+		UpdateData(FALSE);
+	}
+	else if (flag == 3) { //đủ bộ số và dấu sẽ đưa lên tính toán
+		flag = 3;
+		answer = calc(value_1, value_2, _T("*"));
+		answer = calc(answer, _T("100"), _T("/"));
+		edt_2.SetWindowText(value_1 + dau + value_2 + _T("%"));
+		edt_resul.SetWindowText(answer);
+		value_2 = answer;
+		UpdateData(FALSE);
+	}
+	else if (flag == 4) { //vừa mới tính phép "="
+		flag = 3;
+		value_1 = answer;
+		answer = calc(value_1, answer, _T("*"));
+		answer = calc(answer, _T("100"), _T("/"));
+		edt_2.SetWindowText(value_1 + _T("%"));
+		edt_resul.SetWindowText(answer);
+		value_1 = answer;
+		UpdateData(FALSE);
+	}
+}
+
+
+void CcalcDlg::OnBnClickedBtnnegate()
+{
+	// TODO: Add your control notification handler code here
+	UpdateData(true);
+
+	CString str_val2 = _T("");
+
+	edt_resul.GetWindowText(str_val2);
+
+	if (flag == 1) {   //nhập số thứ 1
+		if (flag_val1 == 0) {
+			return;
+		}
+		else {
+			if (value_1 == "0" || value_1 == "Cannot divide by zero.") {
+				return;
+			}
+			else {
+				value_1 = _T("-") + value_1;
+			}
+			if (value_1[0] == value_1[1] && value_1[0] == '-') value_1.Delete(0, 2);
+		}
+		
+		str_val2 = value_1;
+	}
+	else if (flag == 3) {  //nhập số thứ 2
+		if (flag_val2 == 0) {
+			return;
+		}
+		else {
+			if (value_2 == "0" || value_2 == "Cannot divide by zero.") {
+				return;
+			}
+			else {
+				value_2 = _T("-") + value_2;
+			}
+			if (value_2[0] == value_2[1] && value_2[0] == '-') value_2.Delete(0, 2);
+		}
+		str_val2 = value_2;
+	}
+	else if (flag == 2) { //chuyển trạng thái từ nhập dấu qua nhập số
+		flag = 3;
+		value_2 = "0";
+		if (value_2 == "0" || value_2 == "Cannot divide by zero.") {
+			value_2 = _T("-") + value_1;
+		}
+		else {
+			value_2 += _T("-") + value_1;
+		}
+		flag_val2 = 1;
+		str_val2 = value_2;
+	}
+	else if (flag == 4) { //vừa ấn dấu "="
+
+		if (value_1 == "0" || value_1 == "Cannot divide by zero.") {
+			return;
+		}
+		else {
+			value_1 = _T("-") + value_1;
+		}
+		if (value_1[0] == value_1[1] && value_1[0] == '-') value_1.Delete(0, 2);
+
+		str_val2 = value_1;
+	}
+
+	edt_resul.SetWindowText(str_val2);
+	UpdateData(FALSE);
+
+}
+
+
+void CcalcDlg::OnBnClickedButton21() //dấu 1/x
+{
+	// TODO: Add your control notification handler code here
+	UpdateData(true);
+	CString str_val2 = _T("");
+	CString str_val1 = _T("");
+
+	edt_resul.GetWindowText(str_val2);
+	edt_2.GetWindowText(str_val1);
+
+	if (flag == 2) { //đang ở trạng thái nhập dấu
+		flag_val2 = 0;
+		answer = calc(_T("1"), value_1, _T("/"));
+		edt_2.SetWindowText(value_1 + dau + _T("1/") + value_1 );
+		edt_resul.SetWindowText(answer);
+		value_2 = answer;
+		UpdateData(FALSE);
+		flag = 3;
+	}
+	else if (flag == 1) {
+		flag = 1; //chuyển trạng thái từ nhập số qua nhập dấu
+		flag_val1 = 0;
+		answer = calc(_T("1"), value_1, _T("/")) ;
+		edt_2.SetWindowText(_T("1/") + value_1);
+		edt_resul.SetWindowText(answer);
+		value_1 = answer;
+		UpdateData(FALSE);
+	}
+	else if (flag == 3) { //đủ bộ số và dấu sẽ đưa lên tính toán
+		answer = calc(_T("1"), value_2, _T("/"));
+		edt_2.SetWindowText(value_1 + dau + _T("1/") + value_2);
+		edt_resul.SetWindowText(answer);
+		value_2 = answer;
+		UpdateData(FALSE);
+		flag = 3;
+	}
+	else if (flag == 4) { //vừa mới tính phép "="
+		flag = 3;
+		value_1 = answer;
+		answer = calc(_T("1"), value_1, _T("/"));
+		edt_2.SetWindowText(_T("1/") + value_1);
 		edt_resul.SetWindowText(answer);
 		value_1 = answer;
 		UpdateData(FALSE);

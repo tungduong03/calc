@@ -20,6 +20,7 @@
 #define ID_BTN_CE                       1010
 #define ID_BTN_C                        1011
 #define IDC_BUTTON13                    1012
+#define IDC_BTNnegate                   1012
 #define ID_BTN_DIV                      1013
 #define ID_BTN_MUL                      1014
 #define ID_BTN_SUB                      1015
